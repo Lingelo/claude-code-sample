@@ -1,0 +1,552 @@
+# Claude Code - Configuration et Bonnes Pratiques
+
+Ce repository présente ma configuration personnelle de Claude Code, incluant les bonnes pratiques, scripts, et configurations que j'utilise pour améliorer mon expérience de développement.
+
+## Table des matières
+
+- [Utilisation de Voice Inc.](#utilisation-de-voice-inc)
+- [Configuration Claude Code](#configuration-claude-code)
+- [Statusline Personnalisée](#statusline-personnalisée)
+- [Commandes Slash Personnalisées](#commandes-slash-personnalisées)
+- [Agents Personnalisés](#agents-personnalisés)
+- [MCP - Model Context Protocol](#mcp---model-context-protocol)
+- [Tips et Astuces](#tips-et-astuces)
+- [Bonnes Pratiques](#bonnes-pratiques)
+
+---
+
+## Utilisation de Voice Inc.
+
+J'utilise l'application **Voice Inc.** pour interagir avec Claude Code via la voix. Cela me permet de :
+
+- Dicter mes commandes au lieu de les taper au clavier
+- Gagner en productivité et en confort lors de longues sessions de développement
+- Travailler de manière plus ergonomique en réduisant la fatigue liée à la saisie au clavier
+
+### Avantages de l'interaction vocale
+
+- **Rapidité** : La dictée vocale peut être plus rapide que la saisie au clavier pour des instructions complexes
+- **Accessibilité** : Permet de coder même en situation de mobilité réduite ou de fatigue des mains
+- **Multitâche** : Possibilité d'interagir avec Claude Code tout en gardant les mains libres pour d'autres tâches
+
+### Workflow vocal
+
+- Parler clairement et à un rythme régulier
+- Épeler les noms de variables ou de fichiers complexes si nécessaire
+- Confirmer visuellement que la transcription est correcte avant d'envoyer la commande
+
+---
+
+## Configuration Claude Code
+
+Claude Code utilise deux types de fichiers de configuration pour gérer les permissions et les accès de manière flexible.
+
+### Architecture de Configuration
+
+#### settings.json - Configuration Partagée
+
+Le fichier **`.claude/settings.json`** est la configuration de base pour toute l'équipe :
+
+- **Versionnée dans Git** : Partagée avec tous les membres de l'équipe
+- **Permissions communes** : Définit les règles de sécurité et accès standards
+- **Point de référence** : Configuration minimale pour travailler sur le projet
+
+**Contenu type :**
+```json
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(git commit:*)",
+      "Bash(git add:*)",
+      "Bash(npm:*)",
+      "Bash(yarn:*)"
+    ],
+    "deny": [
+      "Read(.env*)"
+    ]
+  }
+}
+```
+
+#### settings.local.json - Configuration Personnelle
+
+Le fichier **`.claude/settings.local.json`** permet de surcharger ou étendre la configuration partagée :
+
+- **Non versionnée** : Ajoutée au `.gitignore`, propre à chaque développeur
+- **Personnalisations** : MCP personnels, scripts locaux, permissions additionnelles
+- **Prioritaire** : Les paramètres locaux écrasent ceux du fichier partagé
+
+**Contenu type :**
+```json
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "mcp__context7",
+      "Bash(git commit:*)",
+      "Bash(git add:*)",
+      "Bash(npm:*)",
+      "Bash(yarn:*)"
+    ],
+    "deny": [
+      "Read(.env*)"
+    ]
+  }
+}
+```
+
+### Permissions Configurées
+
+#### Commandes autorisées (Allow)
+
+**Configuration d'équipe :**
+- **WebSearch** : Recherche web pour accéder à la documentation
+- **git commit/add** : Gestion de version automatisée
+- **npm** : Toutes les commandes npm via wildcard (`npm:*`)
+- **yarn** : Toutes les commandes yarn via wildcard (`yarn:*`)
+
+**Ajouts personnels (exemple) :**
+- **mcp__context7** : Serveur MCP pour documentation enrichie
+
+#### Fichiers protégés (Deny)
+
+Pour des raisons de sécurité, l'accès en lecture aux fichiers d'environnement est explicitement bloqué :
+
+- `.env`
+- `.env.local`
+- `.env.test`
+- `.env.development`
+- `.env.production`
+- Et autres variantes de fichiers d'environnement
+
+Cette configuration permet de travailler efficacement avec les gestionnaires de packages tout en protégeant les informations sensibles comme les clés API, tokens, et autres secrets.
+
+### Bonnes Pratiques
+
+1. **Committer settings.json** : Configuration de base pour l'équipe
+2. **Ignorer settings.local.json** : Ajoutez-le au `.gitignore`
+3. **Documenter les permissions** : Expliquez pourquoi certaines permissions sont activées/bloquées
+4. **Tester localement** : Validez vos permissions personnelles avant de les proposer à l'équipe
+
+---
+
+## Statusline Personnalisée
+
+J'utilise une statusline personnalisée qui affiche des informations utiles sur ma session Claude Code.
+
+### Fonctionnalités
+
+- 🌿 **Statut Git** avec la branche actuelle et indicateurs de changements (+/-)
+- 💄 **Style de sortie** configuré (si applicable)
+- 📁 **Répertoire courant** avec chemin complet
+- 🤖 **Modèle Claude** utilisé
+- 💰 **Coût de session** avec durée
+- 📅 **Coût journalier** total
+- 🧊 **Coût du bloc actif** avec temps restant
+- 🧩 **Nombre de tokens** pour la session actuelle (input + output uniquement)
+
+### Prérequis
+
+- [ccusage](https://github.com/ryoppippi/ccusage) v15.9.4 ou supérieur (pour le support `--id`)
+- `jq` pour le parsing JSON
+- `git` pour les informations de repository
+
+### Installation
+
+```bash
+# Installer ccusage
+npm install -g ccusage
+
+# Rendre le script exécutable
+chmod +x ~/.claude/scripts/statusline-ccusage.sh
+```
+
+### Configuration dans Claude Code
+
+Configurez votre `settings.json` ou `settings-local.json` pour utiliser le script :
+
+```json
+{
+  "statusLine": {
+    "enabled": true,
+    "script": "~/.claude/scripts/statusline-ccusage.sh"
+  }
+}
+```
+
+### Code du Script Statusline
+
+```bash
+#!/bin/bash
+
+# ANSI color codes
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+PURPLE='\033[0;35m'
+GRAY='\033[0;90m'
+LIGHT_GRAY='\033[0;37m'
+RESET='\033[0m'
+
+# Read JSON input from stdin
+input=$(cat)
+
+# Extract current session ID and model info from Claude Code input
+session_id=$(echo "$input" | jq -r '.session_id // empty')
+model_name=$(echo "$input" | jq -r '.model.display_name // empty')
+current_dir=$(echo "$input" | jq -r '.workspace.current_dir // empty')
+output_style=$(echo "$input" | jq -r '.output_style.name // empty')
+
+# Extract cost data from Claude Code Status hook
+session_cost_usd=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
+session_duration_ms=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
+
+# Get current git branch with error handling
+if git rev-parse --git-dir >/dev/null 2>&1; then
+    branch=$(git branch --show-current 2>/dev/null || echo "detached")
+
+    # Check for pending changes and calculate stats
+    if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+        # Get line changes
+        unstaged_stats=$(git diff --numstat 2>/dev/null | awk '{added+=$1; deleted+=$2} END {print added+0, deleted+0}')
+        staged_stats=$(git diff --cached --numstat 2>/dev/null | awk '{added+=$1; deleted+=$2} END {print added+0, deleted+0}')
+
+        # Parse and display changes
+        total_added=$((unstaged_added + staged_added))
+        total_deleted=$((unstaged_deleted + staged_deleted))
+
+        branch="$branch${PURPLE}*${RESET} (${GREEN}+$total_added${RESET} ${RED}-$total_deleted${RESET})"
+    fi
+else
+    branch="no-git"
+fi
+
+# Get today's date
+today=$(date +%Y%m%d)
+
+# Use ccusage to get session tokens and costs
+if command -v ccusage >/dev/null 2>&1 && [ -n "$session_id" ]; then
+    session_data=$(ccusage session --id "$session_id" --json 2>/dev/null)
+
+    if [ $? -eq 0 ] && [ -n "$session_data" ]; then
+        session_tokens=$(echo "$session_data" | jq -r '.entries | map(.inputTokens + .outputTokens) | add // 0')
+        session_cost=$(echo "$session_data" | jq -r '.totalCost // 0')
+    fi
+
+    # Get daily and block costs
+    daily_cost=$(ccusage daily --json --since "$today" 2>/dev/null | jq -r '.totals.totalCost // 0')
+    block_data=$(ccusage blocks --active --json 2>/dev/null)
+fi
+
+# Format and display the statusline
+printf "%b\n%b\n" \
+    "${LIGHT_GRAY}🌿 $branch ${GRAY}|${LIGHT_GRAY} 💄 $output_style ${GRAY}|${LIGHT_GRAY} 📁 $current_dir ${GRAY}|${LIGHT_GRAY} 🤖 $model_name${RESET}" \
+    "${LIGHT_GRAY}💰 \$$session_cost ${GRAY}|${LIGHT_GRAY} 📅 \$$daily_cost ${GRAY}|${LIGHT_GRAY} 🧩 $session_tokens tokens${RESET}"
+```
+
+### Exemple de Sortie
+
+```
+🌿 main* (+15 -3) | 💄 default | 📁 ~/projects/my-app | 🤖 Claude 3.5 Sonnet
+💰 $0.26 (5m) | 📅 $8.03 | 🧊 $8.03 (2h 45m left) | 🧩 2.7K tokens
+```
+
+### Pourquoi exclure les tokens de cache ?
+
+Le script calcule uniquement les tokens de conversation significatifs (input + output) et exclut les tokens de cache car :
+
+- Les tokens de cache représentent le contexte stocké/réutilisé en interne
+- Ils ne représentent pas la taille réelle de la conversation
+- Les inclure gonfle artificiellement les compteurs (ex: 433K vs 2.7K tokens)
+- Pour l'affichage statusline, les tokens de conversation sont plus significatifs
+
+---
+
+## Commandes Slash Personnalisées
+
+### /epct - Workflow EPCT (Explore, Plan, Code, Test)
+
+Une commande slash pour suivre une méthodologie de développement structurée.
+
+**Usage :** `/epct [description-de-la-fonctionnalité]`
+
+Le workflow EPCT se décompose en 4 phases :
+
+1. **EXPLORE** : Trouver tous les fichiers pertinents pour l'implémentation
+2. **PLAN** : Créer une stratégie d'implémentation détaillée
+3. **CODE** : Implémenter en suivant les patterns existants
+4. **TEST** : Vérifier que les changements fonctionnent correctement
+
+Voir le fichier `.claude/commands/epct.md` pour plus de détails.
+
+---
+
+## Agents Personnalisés
+
+Les agents sont des assistants spécialisés qui fonctionnent de manière autonome pour accomplir des tâches spécifiques. Ils s'exécutent en arrière-plan, dans leur propre contexte isolé.
+
+### explore-code - Spécialiste de l'Exploration du Codebase
+
+Un agent dédié à la découverte et l'analyse du code existant.
+
+**Usage :** Automatiquement invoqué par `/epct` dans la phase EXPLORE
+
+**Capacités :**
+- Recherche exhaustive de fichiers et patterns dans le codebase
+- Analyse des dépendances et imports
+- Identification des conventions et patterns existants
+- Documentation des APIs et schémas de base de données
+- Extraction d'exemples de code pertinents
+
+### Avantages des Agents
+
+#### 1. Préservation du Contexte Principal
+
+Les agents fonctionnent dans leur propre contexte isolé, ce qui signifie :
+- **Pas de pollution du contexte** : Les recherches et explorations intensives ne remplissent pas votre conversation principale
+- **Économie de tokens** : Le contexte principal reste léger et focalisé sur la tâche
+- **Meilleure organisation** : Séparation claire entre exploration et implémentation
+
+#### 2. Exécution en Parallèle
+
+- **Gain de temps** : Plusieurs agents peuvent fonctionner simultanément
+- **Exploration multi-dimensionnelle** : Recherche simultanée dans différentes parties du codebase
+- **Efficacité** : Pendant qu'un agent explore, d'autres peuvent rechercher de la documentation
+
+#### 3. Spécialisation et Expertise
+
+- **Focus** : Chaque agent est optimisé pour une tâche spécifique
+- **Profondeur** : Analyse plus approfondie dans leur domaine d'expertise
+- **Résultats structurés** : Rapports formatés et organisés selon des templates définis
+
+### Combiner /epct et explore-code pour un Développement Optimal
+
+La puissance de cette configuration réside dans la combinaison synergique de `/epct` et de l'agent `explore-code`.
+
+#### Workflow Recommandé
+
+**1. Phase EXPLORE**
+```
+/epct ajouter un système d'authentification OAuth
+```
+
+La commande `/epct` lance automatiquement l'agent `explore-code` qui :
+- Cherche les patterns d'authentification existants
+- Identifie les fichiers de configuration pertinents
+- Trouve les middlewares et guards utilisés
+- Localise les exemples de flux d'authentification
+- **Tout cela sans polluer votre contexte principal**
+
+**2. Phase PLAN**
+
+Avec les informations recueillies par l'agent, Claude crée un plan détaillé :
+- Basé sur les patterns existants découverts
+- Aligné avec les conventions du projet
+- Incluant les fichiers spécifiques à modifier
+- **Le contexte reste clair et focalisé sur la planification**
+
+**3. Phase CODE**
+
+L'implémentation suit les patterns découverts :
+- Utilise les mêmes conventions de nommage
+- Réutilise les utilitaires existants
+- S'intègre naturellement dans l'architecture
+- **Contexte concentré uniquement sur le code à écrire**
+
+**4. Phase TEST**
+
+Validation basée sur les tests existants trouvés :
+- Suit les patterns de test du projet
+- Réutilise les fixtures et mocks existants
+- **Contexte minimal pour les vérifications**
+
+#### Avantages de cette Combinaison
+
+**Contexte Principal Optimisé**
+- Seules les informations essentielles sont dans la conversation principale
+- Les détails de l'exploration restent dans le contexte de l'agent
+- Plus de place pour le code et les décisions importantes
+
+**Développement Plus Pertinent**
+- Code aligné avec l'existant dès le départ
+- Moins d'allers-retours pour ajuster le style
+- Réutilisation maximale des patterns éprouvés
+
+**Efficacité Maximale**
+- Exploration parallèle de multiples aspects
+- Pas de temps perdu à chercher manuellement
+- Focus sur l'implémentation plutôt que la découverte
+
+#### Exemple Concret
+
+Sans agents :
+```
+User: Ajoute un système de cache
+Claude: [Lit 20 fichiers, remplit le contexte, cherche des patterns...]
+Claude: [Propose une solution potentiellement différente du style du projet]
+User: Non, on utilise Redis ici, pas memcached
+Claude: [Recommence avec Redis...]
+```
+
+Avec /epct + explore-code :
+```
+User: /epct ajoute un système de cache
+Claude: [Lance explore-code qui trouve que le projet utilise Redis]
+Claude: [Présente un plan basé sur les patterns Redis existants]
+User: Parfait, go!
+Claude: [Implémente en suivant exactement le style du projet]
+```
+
+---
+
+## MCP - Model Context Protocol
+
+### Qu'est-ce que MCP ?
+
+Le **Model Context Protocol (MCP)** est un système qui permet à Claude Code d'accéder à des sources de données et services externes. Les serveurs MCP étendent les capacités de Claude en lui donnant accès à des APIs, bases de données, outils de recherche, et autres ressources.
+
+### MCP Recommandés
+
+#### Context7
+
+**Context7** est un service MCP qui permet à Claude Code d'accéder à de la documentation technique en temps réel. Il fournit un contexte enrichi et à jour sur les frameworks, bibliothèques, et outils de développement.
+
+**Avantages de Context7 :**
+- Accès à la documentation officielle des frameworks populaires
+- Informations à jour sur les APIs et meilleures pratiques
+- Réponses contextuelles basées sur les versions spécifiques des bibliothèques
+- Améliore la précision des suggestions de Claude pour les technologies récentes
+
+**Installation :**
+
+1. Obtenez une clé API sur [context7.com](https://context7.com)
+
+2. Installez le serveur MCP Context7 :
+```bash
+claude mcp add --transport http context7 https://mcp.context7.com/mcp --header "CONTEXT7_API_KEY: YOUR_API_KEY"
+```
+
+Remplacez `YOUR_API_KEY` par votre clé API obtenue sur le site de Context7.
+
+**Utilisation :**
+
+Une fois installé, Claude Code pourra automatiquement consulter Context7 pour obtenir de la documentation et des exemples de code à jour lorsque vous travaillez sur des projets utilisant des frameworks supportés.
+
+#### Atlassian
+
+**Atlassian MCP** est un serveur MCP qui permet à Claude Code d'interagir directement avec les outils de l'écosystème Atlassian (Jira, Confluence, Bitbucket, etc.). Il facilite l'intégration du développement avec la gestion de projet et la documentation.
+
+**Avantages d'Atlassian MCP :**
+- Accès direct à vos tickets Jira depuis Claude Code
+- Lecture et recherche dans la documentation Confluence
+- Intégration avec Bitbucket pour la gestion de code
+- Création et mise à jour de tickets/issues directement depuis vos sessions de code
+- Synchronisation du contexte entre votre code et vos projets Atlassian
+- Améliore la traçabilité entre les tâches et le code
+
+**Installation :**
+
+```bash
+claude mcp add --transport sse atlassian https://mcp.atlassian.com/v1/sse
+```
+
+**Note :** Ce MCP utilise le transport SSE (Server-Sent Events) pour une communication en temps réel avec les services Atlassian.
+
+**Utilisation :**
+
+Une fois installé, vous pourrez demander à Claude Code de :
+- Récupérer les informations d'un ticket Jira
+- Rechercher dans votre documentation Confluence
+- Créer des tickets basés sur des bugs découverts
+- Mettre à jour le statut de vos tâches
+- Lier automatiquement votre code aux issues correspondantes
+
+### Gestion des MCP
+
+```bash
+# Lister les MCP installés
+claude mcp list
+
+# Supprimer un MCP
+claude mcp remove context7
+
+# Mettre à jour la configuration d'un MCP
+claude mcp add --transport http context7 https://mcp.context7.com/mcp --header "CONTEXT7_API_KEY: NEW_API_KEY"
+```
+
+---
+
+## Tips et Astuces
+
+### Raccourcis Clavier
+
+- **Échap (1x)** : Vide le contenu de l'input texte
+  - Utile pour annuler rapidement ce que vous êtes en train de taper
+  - Permet de recommencer une saisie sans avoir à tout effacer manuellement
+
+- **Échap Échap (2x)** : Rewind d'une étape dans la conversation
+  - Permet de revenir à l'état précédent de la conversation
+  - Idéal pour annuler la dernière interaction et repartir d'un point antérieur
+  - Pratique si vous voulez explorer une direction différente dans la conversation
+
+### Commandes de Contextualisation
+
+- **# (dièse)** : Ajouter une mémoire dans CLAUDE.md
+  - Permet de sauvegarder des informations importantes sur le projet
+  - Les notes sont stockées dans le fichier `CLAUDE.md` à la racine du projet
+  - Idéal pour documenter les décisions de design, conventions, ou informations récurrentes
+  - Claude Code lira automatiquement ce fichier pour avoir le contexte du projet
+
+- **@ (arobase)** : Cibler un fichier particulier
+  - Permet de contextualiser un fichier spécifique dans la conversation
+  - Usage : `@nom-du-fichier.ext` pour référencer un fichier
+  - Claude Code chargera le contenu du fichier dans le contexte
+  - Utile pour discuter d'un fichier précis ou demander des modifications ciblées
+
+---
+
+## Bonnes Pratiques
+
+### 1. Structure des demandes
+
+- Formuler des demandes claires et précises
+- Décomposer les tâches complexes en étapes plus simples
+- Vérifier les résultats après chaque modification importante
+
+### 2. Gestion du code
+
+- Toujours préférer l'édition de fichiers existants à la création de nouveaux fichiers
+- Utiliser les outils spécialisés (Read, Edit, Write) plutôt que les commandes bash
+- Demander une revue du code pour les changements importants
+
+### 3. Communication
+
+- Être explicite sur les attentes et les objectifs
+- Demander des explications quand quelque chose n'est pas clair
+- Utiliser les références de code (chemin:ligne) pour une navigation facile
+
+### 4. Utilisation des workflows
+
+- Utiliser `/epct` pour des tâches de développement structurées
+- Toujours commencer par la phase EXPLORE avant de coder
+- Demander validation du plan avant d'implémenter
+
+---
+
+## Outils et Technologies
+
+- **Claude Code** : Assistant CLI pour le développement logiciel
+- **Voice Inc.** : Application de dictée vocale pour l'interaction sans clavier
+- **ccusage** : Outil de suivi des coûts et usage de Claude
+- **Git** : Gestion de version
+- **jq** : Parser JSON en ligne de commande
+
+## Ressources
+
+- [Documentation Claude Code](https://docs.claude.com/en/docs/claude-code)
+- [ccusage GitHub](https://github.com/ryoppippi/ccusage)
+- [Voice Inc.](https://voiceinc.app/)
+
+---
+
+*Ce README est maintenu à jour avec mes pratiques de développement évolutives.*

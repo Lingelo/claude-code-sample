@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(git commit:*)",
+      "Bash(git add:*)",
+      "Bash(npm:*)",
+      "Bash(yarn:*)"
+    ],
+    "deny": [
+      "Read(.env*)"
+    ],
+    "ask": []
+  },
+  "statusLine": {
+    "enabled": true,
+    "script": "~/.claude/scripts/statusline-ccusage.sh"
+  }
+}
