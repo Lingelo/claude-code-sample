@@ -41,6 +41,56 @@ J'utilise l'application **Voice Inc.** pour interagir avec Claude Code via la vo
 
 Claude Code utilise deux types de fichiers de configuration pour gérer les permissions et les accès de manière flexible.
 
+### Utilisation Globale vs Par Projet
+
+Ce repository contient une configuration Claude Code complète qui peut être utilisée de deux façons :
+
+#### 🌍 Configuration Globale (Tous vos projets)
+
+Copiez le contenu du dossier `.claude/` de ce repo vers votre répertoire home `~/.claude/` :
+
+```bash
+# Copier les agents
+cp -r .claude/agents/* ~/.claude/agents/
+
+# Copier les commandes
+cp -r .claude/commands/* ~/.claude/commands/
+
+# Copier les scripts
+cp -r .claude/scripts/* ~/.claude/scripts/
+
+# Copier la configuration (optionnel - adapter selon vos besoins)
+cp .claude/settings.json ~/.claude/settings.json
+```
+
+**Avantages :**
+- ✅ Agent `explore-code` disponible dans tous vos projets
+- ✅ Commande `/epct` accessible partout
+- ✅ Statusline personnalisée sur tous vos projets
+- ✅ Une seule configuration à maintenir
+
+#### 📁 Configuration Par Projet (Ce projet uniquement)
+
+Gardez la configuration dans le dossier `.claude/` du projet :
+
+**Avantages :**
+- ✅ Configuration versionnée avec le projet
+- ✅ Partagée avec l'équipe via Git
+- ✅ Adaptée aux besoins spécifiques du projet
+- ✅ Pas d'impact sur vos autres projets
+
+#### 🔄 Approche Hybride (Recommandée)
+
+Combinez les deux approches pour un maximum de flexibilité :
+
+1. **Global** : Agents et commandes génériques dans `~/.claude/`
+2. **Par projet** : Configuration spécifique (settings.json) dans `.claude/`
+
+Claude Code fusionnera automatiquement :
+- Les agents de `~/.claude/agents/` avec ceux de `./.claude/agents/`
+- Les commandes de `~/.claude/commands/` avec celles de `./.claude/commands/`
+- Les settings locaux écrasent les settings globaux
+
 ### Architecture de Configuration
 
 #### settings.json - Configuration Partagée
@@ -133,7 +183,7 @@ Cette configuration permet de travailler efficacement avec les gestionnaires de 
 
 ## Statusline Personnalisée
 
-J'utilise une statusline personnalisée qui affiche des informations utiles sur ma session Claude Code.
+Une statusline personnalisée qui affiche des informations utiles sur votre session Claude Code.
 
 ### Fonctionnalités
 
@@ -158,91 +208,16 @@ J'utilise une statusline personnalisée qui affiche des informations utiles sur 
 # Installer ccusage
 npm install -g ccusage
 
-# Rendre le script exécutable
-chmod +x ~/.claude/scripts/statusline-ccusage.sh
+# Le script est disponible dans .claude/scripts/statusline-ccusage.sh
+# Il doit être rendu exécutable :
+chmod +x .claude/scripts/statusline-ccusage.sh
 ```
 
-### Configuration dans Claude Code
+### Configuration
 
-Configurez votre `settings.json` ou `settings-local.json` pour utiliser le script :
-
-```json
-{
-  "statusLine": {
-    "enabled": true,
-    "script": "~/.claude/scripts/statusline-ccusage.sh"
-  }
-}
-```
-
-### Code du Script Statusline
-
-```bash
-#!/bin/bash
-
-# ANSI color codes
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-PURPLE='\033[0;35m'
-GRAY='\033[0;90m'
-LIGHT_GRAY='\033[0;37m'
-RESET='\033[0m'
-
-# Read JSON input from stdin
-input=$(cat)
-
-# Extract current session ID and model info from Claude Code input
-session_id=$(echo "$input" | jq -r '.session_id // empty')
-model_name=$(echo "$input" | jq -r '.model.display_name // empty')
-current_dir=$(echo "$input" | jq -r '.workspace.current_dir // empty')
-output_style=$(echo "$input" | jq -r '.output_style.name // empty')
-
-# Extract cost data from Claude Code Status hook
-session_cost_usd=$(echo "$input" | jq -r '.cost.total_cost_usd // 0')
-session_duration_ms=$(echo "$input" | jq -r '.cost.total_duration_ms // 0')
-
-# Get current git branch with error handling
-if git rev-parse --git-dir >/dev/null 2>&1; then
-    branch=$(git branch --show-current 2>/dev/null || echo "detached")
-
-    # Check for pending changes and calculate stats
-    if ! git diff-index --quiet HEAD -- 2>/dev/null; then
-        # Get line changes
-        unstaged_stats=$(git diff --numstat 2>/dev/null | awk '{added+=$1; deleted+=$2} END {print added+0, deleted+0}')
-        staged_stats=$(git diff --cached --numstat 2>/dev/null | awk '{added+=$1; deleted+=$2} END {print added+0, deleted+0}')
-
-        # Parse and display changes
-        total_added=$((unstaged_added + staged_added))
-        total_deleted=$((unstaged_deleted + staged_deleted))
-
-        branch="$branch${PURPLE}*${RESET} (${GREEN}+$total_added${RESET} ${RED}-$total_deleted${RESET})"
-    fi
-else
-    branch="no-git"
-fi
-
-# Get today's date
-today=$(date +%Y%m%d)
-
-# Use ccusage to get session tokens and costs
-if command -v ccusage >/dev/null 2>&1 && [ -n "$session_id" ]; then
-    session_data=$(ccusage session --id "$session_id" --json 2>/dev/null)
-
-    if [ $? -eq 0 ] && [ -n "$session_data" ]; then
-        session_tokens=$(echo "$session_data" | jq -r '.entries | map(.inputTokens + .outputTokens) | add // 0')
-        session_cost=$(echo "$session_data" | jq -r '.totalCost // 0')
-    fi
-
-    # Get daily and block costs
-    daily_cost=$(ccusage daily --json --since "$today" 2>/dev/null | jq -r '.totals.totalCost // 0')
-    block_data=$(ccusage blocks --active --json 2>/dev/null)
-fi
-
-# Format and display the statusline
-printf "%b\n%b\n" \
-    "${LIGHT_GRAY}🌿 $branch ${GRAY}|${LIGHT_GRAY} 💄 $output_style ${GRAY}|${LIGHT_GRAY} 📁 $current_dir ${GRAY}|${LIGHT_GRAY} 🤖 $model_name${RESET}" \
-    "${LIGHT_GRAY}💰 \$$session_cost ${GRAY}|${LIGHT_GRAY} 📅 \$$daily_cost ${GRAY}|${LIGHT_GRAY} 🧩 $session_tokens tokens${RESET}"
-```
+Le script statusline est déjà configuré dans `settings.json`. Le chemin peut être :
+- **Relatif au projet** : `./.claude/scripts/statusline-ccusage.sh`
+- **Absolu depuis le home** : `~/.claude/scripts/statusline-ccusage.sh` (si copié globalement)
 
 ### Exemple de Sortie
 
@@ -251,14 +226,9 @@ printf "%b\n%b\n" \
 💰 $0.26 (5m) | 📅 $8.03 | 🧊 $8.03 (2h 45m left) | 🧩 2.7K tokens
 ```
 
-### Pourquoi exclure les tokens de cache ?
+### Note sur les Tokens
 
-Le script calcule uniquement les tokens de conversation significatifs (input + output) et exclut les tokens de cache car :
-
-- Les tokens de cache représentent le contexte stocké/réutilisé en interne
-- Ils ne représentent pas la taille réelle de la conversation
-- Les inclure gonfle artificiellement les compteurs (ex: 433K vs 2.7K tokens)
-- Pour l'affichage statusline, les tokens de conversation sont plus significatifs
+Le script affiche uniquement les tokens de conversation (input + output) et exclut les tokens de cache, car ceux-ci représentent le contexte stocké en interne et ne reflètent pas la taille réelle de la conversation
 
 ---
 
