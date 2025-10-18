@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Claude Code Configuration Repository** - a shareable collection of custom agents, slash commands, scripts, and settings to enhance Claude Code workflows. The configuration can be used both at the project level and globally across all projects.
+This is a **Claude Code Configuration Repository** - a shareable collection of custom agents, slash commands, scripts, and settings to enhance Claude Code workflows. The configuration can be distributed as a plugin via the marketplace system or used at the project/global level.
 
 ## Repository Architecture
 
@@ -17,13 +17,39 @@ This is a **Claude Code Configuration Repository** - a shareable collection of c
 ├── scripts/         # Utility scripts (statusline, hooks, etc.)
 ├── settings.json    # Shared team configuration (versioned)
 └── settings.local.json  # Personal overrides (gitignored)
+
+marketplace/
+├── .claude-plugin/
+│   └── marketplace.json           # Plugin marketplace configuration
+└── claude-code-config/            # lingelo-base plugin package
+    ├── agents/                    # explore-code agent
+    ├── commands/                  # /epct command
+    ├── scripts/                   # statusline script
+    └── settings.json              # Shared settings
 ```
 
-**Key principle:** `settings.json` is shared via Git for team-wide standards. `settings.local.json` is personal and never committed.
+**Key principles:**
+- `settings.json` is shared via Git for team-wide standards
+- `settings.local.json` is personal and never committed
+- `marketplace/` contains distributable plugin packages
+
+### Plugin Marketplace
+
+**lingelo-tools** (`marketplace/.claude-plugin/marketplace.json`)
+- Plugin marketplace configuration for distributing Claude Code configurations
+- Contains the `lingelo-base` plugin with all custom configurations
+- Can be installed via `/plugin` command in any Claude Code session
+- Enables one-command installation of all custom agents, commands, and scripts
+
+**lingelo-base plugin** (`marketplace/claude-code-config/`)
+- Packaged collection of all custom configurations
+- Includes explore-code agent, /epct command, statusline script
+- Distributable as a single plugin unit
+- Version: 1.0.0
 
 ### Custom Agents
 
-**explore-code** (`.claude/agents/explore-code.md`)
+**explore-code** (`.claude/agents/explore-code.md` and `marketplace/claude-code-config/agents/explore-code.md`)
 - Specialized agent for codebase exploration
 - Automatically invoked by `/epct` during EXPLORE phase
 - Runs in isolated context to preserve main conversation
@@ -32,7 +58,7 @@ This is a **Claude Code Configuration Repository** - a shareable collection of c
 
 ### Custom Commands
 
-**/epct** (`.claude/commands/epct.md`)
+**/epct** (`.claude/commands/epct.md` and `marketplace/claude-code-config/commands/epct.md`)
 - Systematic implementation workflow: **Explore → Plan → Code → Test**
 - **EXPLORE**: Launch parallel agents to find relevant code/patterns
 - **PLAN**: Create detailed implementation strategy, ask for clarification
@@ -56,18 +82,31 @@ This is a **Claude Code Configuration Repository** - a shareable collection of c
 
 ## Configuration Management
 
-### Global vs Project Usage
+### Installation Methods
 
-**Deploy globally (all projects):**
+**Method 1: Plugin Marketplace (Recommended)**
+```bash
+# Install from local marketplace
+/plugin
+
+# Or add as remote marketplace on GitHub
+/plugin marketplace add Lingelo/claude-code-sample
+
+# Then install lingelo-base plugin
+/plugin
+```
+
+**Method 2: Manual Global Deployment**
 ```bash
 cp -r .claude/agents/* ~/.claude/agents/
 cp -r .claude/commands/* ~/.claude/commands/
 cp -r .claude/scripts/* ~/.claude/scripts/
 ```
 
-**Deploy per-project:** Keep `.claude/` in the project (already done here)
+**Method 3: Per-Project**
+Keep `.claude/` in the project (already done here)
 
-**Hybrid approach (recommended):**
+**Hybrid approach:**
 - Generic agents/commands in `~/.claude/`
 - Project-specific settings in `./.claude/`
 - Claude Code automatically merges both locations
@@ -88,10 +127,20 @@ cp -r .claude/scripts/* ~/.claude/scripts/
 ### For adding new configurations to this repo:
 
 1. Test changes locally in `.claude/`
-2. If adding to shared config, update `.claude/settings.json`
-3. If personal preference, use `.claude/settings.local.json` (not committed)
-4. Update README.md if adding new agents/commands
-5. Commit with descriptive message
+2. Update plugin in `marketplace/claude-code-config/` to match
+3. If adding to shared config, update `.claude/settings.json`
+4. If personal preference, use `.claude/settings.local.json` (not committed)
+5. Update README.md and CLAUDE.md if adding new agents/commands
+6. Update version in `marketplace/.claude-plugin/marketplace.json` if needed
+7. Commit with descriptive message
+
+### For distributing via marketplace:
+
+1. Ensure `marketplace/claude-code-config/` is up to date
+2. Test plugin installation locally with `/plugin`
+3. Update version number in marketplace.json
+4. Push to GitHub
+5. Users can add marketplace: `/plugin marketplace add Lingelo/claude-code-sample`
 
 ### When using /epct for feature development:
 
@@ -107,3 +156,5 @@ cp -r .claude/scripts/* ~/.claude/scripts/
 - settings.local.json is gitignored by design
 - Statusline script path is relative for portability
 - Agent/command files use frontmatter for metadata (name, description, color, model)
+- Marketplace structure in `marketplace/` for plugin distribution
+- Keep `.claude/` and `marketplace/claude-code-config/` in sync
