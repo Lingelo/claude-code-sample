@@ -9,6 +9,7 @@ Ce repository présente ma configuration personnelle de Claude Code, incluant le
 - [Statusline Personnalisée](#statusline-personnalisée)
 - [Commandes Slash Personnalisées](#commandes-slash-personnalisées)
 - [Agents Personnalisés](#agents-personnalisés)
+- [Plugin Marketplace](#plugin-marketplace)
 - [MCP - Model Context Protocol](#mcp---model-context-protocol)
 - [Tips et Astuces](#tips-et-astuces)
 - [Bonnes Pratiques](#bonnes-pratiques)
@@ -365,6 +366,209 @@ Claude: [Lance explore-code qui trouve que le projet utilise Redis]
 Claude: [Présente un plan basé sur les patterns Redis existants]
 User: Parfait, go!
 Claude: [Implémente en suivant exactement le style du projet]
+```
+
+---
+
+## Plugin Marketplace
+
+### Qu'est-ce qu'un Plugin Marketplace ?
+
+Un **Plugin Marketplace** est un dépôt centralisé qui permet de distribuer et d'installer facilement des collections de configurations Claude Code. Introduit en octobre 2025, ce système permet de partager des commandes slash, agents, serveurs MCP, et hooks avec un seul fichier de configuration.
+
+### Structure du Marketplace
+
+Ce repository contient un marketplace local dans le dossier `.claude-plugin/` :
+
+```
+.claude-plugin/
+└── marketplace.json    # Fichier de configuration du marketplace
+```
+
+Le fichier `marketplace.json` définit :
+- **Informations du marketplace** : Nom, propriétaire, contact
+- **Liste des plugins** : Plugins disponibles avec leurs métadonnées
+- **Sources des plugins** : Chemins locaux ou URLs distants
+
+### Configuration du Marketplace
+
+Le fichier `.claude-plugin/marketplace.json` de ce repository :
+
+```json
+{
+  "name": "lingelo-tools",
+  "owner": {
+    "name": "Angelo LIMA",
+    "email": "angelomiguellima@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "lingelo-base",
+      "source": "./claude-code-config",
+      "description": "Lingelo base configurations for Claude Code.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Angelo LIMA",
+        "email": "angelomiguellima@gmail.com"
+      }
+    }
+  ]
+}
+```
+
+### Qu'est-ce qu'un Plugin ?
+
+Un plugin est une collection réutilisable qui peut inclure :
+
+- **📋 Slash commands** : Raccourcis personnalisés pour des opérations fréquentes
+- **🤖 Agents (subagents)** : Assistants spécialisés pour des tâches de développement spécifiques
+- **🔌 Serveurs MCP** : Connexions à des outils et sources de données externes
+- **🪝 Hooks** : Personnalisation du comportement de Claude Code à des points clés
+
+### Utilisation du Marketplace
+
+#### Installer un Plugin
+
+Pour installer le plugin `lingelo-base` depuis ce marketplace local :
+
+```bash
+# Si le marketplace est dans le répertoire courant
+/plugin
+
+# Puis sélectionner "lingelo-base" dans le menu
+```
+
+Pour un marketplace distant (GitHub) :
+
+```bash
+# Ajouter un marketplace distant
+/plugin marketplace add user-or-org/repo-name
+
+# Exemple avec un marketplace GitHub public
+/plugin marketplace add ananddtyagi/claude-code-marketplace
+
+# Puis installer un plugin via le menu
+/plugin
+```
+
+#### Gérer les Marketplaces
+
+```bash
+# Lister les marketplaces configurés
+/plugin marketplace list
+
+# Supprimer un marketplace
+/plugin marketplace remove lingelo-tools
+```
+
+### Créer votre Propre Marketplace
+
+Pour créer un marketplace partageable :
+
+1. **Créez la structure de base** :
+```bash
+mkdir -p .claude-plugin
+```
+
+2. **Créez le fichier marketplace.json** :
+```json
+{
+  "name": "mon-marketplace",
+  "owner": {
+    "name": "Votre Nom",
+    "email": "votre@email.com"
+  },
+  "plugins": [
+    {
+      "name": "mon-plugin",
+      "source": "./path/to/plugin",
+      "description": "Description de votre plugin",
+      "version": "1.0.0",
+      "author": {
+        "name": "Votre Nom",
+        "email": "votre@email.com"
+      }
+    }
+  ]
+}
+```
+
+3. **Organisez vos plugins** :
+```
+claude-code-config/          # Dossier du plugin
+├── agents/                  # Agents personnalisés
+│   └── explore-code.md
+├── commands/                # Commandes slash
+│   └── epct.md
+├── scripts/                 # Scripts utilitaires
+│   └── statusline-ccusage.sh
+└── settings.json            # Configuration partagée
+```
+
+4. **Publiez sur GitHub** (optionnel) :
+```bash
+git init
+git add .
+git commit -m "Initial marketplace setup"
+git push origin main
+```
+
+5. **Partagez avec d'autres** :
+```bash
+# Autres développeurs peuvent l'ajouter avec :
+/plugin marketplace add votre-username/votre-repo
+```
+
+### Avantages des Marketplaces
+
+**🚀 Installation Simplifiée**
+- Un seul fichier `marketplace.json` pour distribuer plusieurs plugins
+- Installation en une commande via `/plugin`
+- Pas besoin de copier manuellement les fichiers
+
+**📦 Packaging Centralisé**
+- Regroupez agents, commandes, et scripts dans un seul package
+- Versionnement clair de vos configurations
+- Distribution facile au sein d'une équipe
+
+**🔄 Mise à Jour Facilitée**
+- Mettez à jour le marketplace, pas chaque configuration individuellement
+- Les utilisateurs peuvent réinstaller pour obtenir les dernières versions
+- Gestion centralisée des dépendances
+
+**🌐 Partage Communautaire**
+- Publiez vos workflows sur GitHub
+- Découvrez les configurations d'autres développeurs
+- Contribuez à l'écosystème Claude Code
+
+### Marketplaces Publics Recommandés
+
+Quelques marketplaces communautaires populaires :
+
+```bash
+# Marketplace officiel communautaire
+/plugin marketplace add ananddtyagi/claude-code-marketplace
+
+# Every-Env plugin marketplace
+/plugin marketplace add EveryInc/every-marketplace
+
+# Plugins Plus (227+ plugins)
+/plugin marketplace add jeremylongshore/claude-code-plugins-plus
+```
+
+### Plugin lingelo-base
+
+Le plugin `lingelo-base` inclus dans ce marketplace contient :
+
+- **Agent explore-code** : Exploration approfondie du codebase
+- **Commande /epct** : Workflow Explore-Plan-Code-Test
+- **Statusline personnalisée** : Affichage des métriques de session
+- **Configuration partagée** : Permissions et settings d'équipe
+
+Pour installer :
+```bash
+/plugin
+# Sélectionner "lingelo-base" dans le menu
 ```
 
 ---
