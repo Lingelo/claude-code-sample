@@ -5,7 +5,8 @@
       "Bash(git commit:*)",
       "Bash(git add:*)",
       "Bash(npm:*)",
-      "Bash(yarn:*)"
+      "Bash(yarn:*)",
+      "mcp__context7"
     ],
     "deny": [
       "Read(.env*)"
