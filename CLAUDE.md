@@ -44,8 +44,14 @@ marketplace/
 **lingelo-base plugin** (`marketplace/claude-code-config/`)
 - Packaged collection of all custom configurations
 - Includes explore-code agent, /epct command, statusline script
+- **Integrated MCP servers**: Atlassian, Context7, Playwright
 - Distributable as a single plugin unit
 - Version: 1.0.0
+
+**MCP Servers** (`marketplace/claude-code-config/plugin.json`)
+- **Atlassian**: Jira, Confluence, Bitbucket integration (SSE transport)
+- **Context7**: Real-time documentation access (requires `CONTEXT7_API_KEY` env var)
+- **Playwright**: Browser automation and testing (npx-based)
 
 ### Custom Agents
 
@@ -118,9 +124,14 @@ Keep `.claude/` in the project (already done here)
 - git commit/add (automated version control)
 - npm/yarn (package management)
 - mcp__context7 (documentation MCP)
+- mcp__atlassian (Jira/Confluence/Bitbucket MCP)
+- mcp__playwright (browser automation MCP)
 
 **Denied:**
 - Read(.env*) - All environment files protected
+
+**Environment Variables:**
+- `CONTEXT7_API_KEY` - Required for Context7 MCP server (obtain from context7.com)
 
 ## Development Workflow
 
@@ -158,3 +169,6 @@ Keep `.claude/` in the project (already done here)
 - Agent/command files use frontmatter for metadata (name, description, color, model)
 - Marketplace structure in `marketplace/` for plugin distribution
 - Keep `.claude/` and `marketplace/claude-code-config/` in sync
+- MCP servers are configured in `plugin.json` and auto-installed with the plugin
+- Context7 MCP requires `CONTEXT7_API_KEY` environment variable to be set
+- Atlassian and Playwright MCPs work out-of-the-box with npx

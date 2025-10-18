@@ -574,11 +574,34 @@ Le plugin `lingelo-base` inclus dans ce marketplace contient :
 - **Commande /epct** : Workflow Explore-Plan-Code-Test
 - **Statusline personnalisée** : Affichage des métriques de session
 - **Configuration partagée** : Permissions et settings d'équipe
+- **Serveurs MCP intégrés** : Atlassian, Context7, et Playwright préconfigurés
+
+#### Serveurs MCP Inclus
+
+**Atlassian MCP** - Intégration avec Jira, Confluence, et Bitbucket
+- Accès direct à vos tickets et documentation
+- Création et mise à jour d'issues depuis Claude Code
+- Aucune configuration supplémentaire requise
+
+**Context7 MCP** - Documentation technique en temps réel
+- Accès à la documentation des frameworks et bibliothèques
+- Nécessite une clé API Context7 (variable d'environnement `CONTEXT7_API_KEY`)
+- Obtenez votre clé sur [context7.com](https://context7.com)
+
+**Playwright MCP** - Automatisation de navigateur
+- Tests et automatisation web directement depuis Claude Code
+- Capture d'écran, navigation, et interactions avec les pages web
+- Installation automatique via npx
 
 Pour installer :
 ```bash
 /plugin
 # Sélectionner "lingelo-base" dans le menu
+```
+
+**Note** : Pour utiliser Context7, définissez votre clé API :
+```bash
+export CONTEXT7_API_KEY="votre-clé-api"
 ```
 
 ---
@@ -588,6 +611,26 @@ Pour installer :
 ### Qu'est-ce que MCP ?
 
 Le **Model Context Protocol (MCP)** est un système qui permet à Claude Code d'accéder à des sources de données et services externes. Les serveurs MCP étendent les capacités de Claude en lui donnant accès à des APIs, bases de données, outils de recherche, et autres ressources.
+
+**Note importante** : Les serveurs MCP Atlassian, Context7, et Playwright sont maintenant **automatiquement inclus** dans le plugin `lingelo-base`. Installez simplement le plugin via `/plugin` et les serveurs MCP seront configurés automatiquement !
+
+### Installation via Plugin (Recommandé)
+
+La méthode la plus simple est d'installer le plugin `lingelo-base` qui inclut tous les serveurs MCP préconfigurés :
+
+```bash
+/plugin
+# Sélectionner "lingelo-base" dans le menu
+```
+
+Les serveurs MCP suivants seront automatiquement disponibles :
+- **Atlassian** : Jira, Confluence, Bitbucket
+- **Context7** : Documentation technique (nécessite `CONTEXT7_API_KEY`)
+- **Playwright** : Automatisation navigateur
+
+### Installation Manuelle (Alternative)
+
+Si vous préférez installer les serveurs MCP individuellement sans le plugin :
 
 ### MCP Recommandés
 
