@@ -378,11 +378,17 @@ Un **Plugin Marketplace** est un dépôt centralisé qui permet de distribuer et
 
 ### Structure du Marketplace
 
-Ce repository contient un marketplace local dans le dossier `.claude-plugin/` :
+Ce repository contient un marketplace local dans le dossier `marketplace/.claude-plugin/` :
 
 ```
-.claude-plugin/
-└── marketplace.json    # Fichier de configuration du marketplace
+marketplace/
+├── .claude-plugin/
+│   └── marketplace.json    # Fichier de configuration du marketplace
+└── claude-code-config/     # Plugin lingelo-base
+    ├── agents/
+    ├── commands/
+    ├── scripts/
+    └── settings.json
 ```
 
 Le fichier `marketplace.json` définit :
@@ -392,7 +398,7 @@ Le fichier `marketplace.json` définit :
 
 ### Configuration du Marketplace
 
-Le fichier `.claude-plugin/marketplace.json` de ce repository :
+Le fichier `marketplace/.claude-plugin/marketplace.json` de ce repository :
 
 ```json
 {
@@ -467,7 +473,8 @@ Pour créer un marketplace partageable :
 
 1. **Créez la structure de base** :
 ```bash
-mkdir -p .claude-plugin
+mkdir -p marketplace/.claude-plugin
+mkdir -p marketplace/mon-plugin
 ```
 
 2. **Créez le fichier marketplace.json** :
@@ -495,14 +502,17 @@ mkdir -p .claude-plugin
 
 3. **Organisez vos plugins** :
 ```
-claude-code-config/          # Dossier du plugin
-├── agents/                  # Agents personnalisés
-│   └── explore-code.md
-├── commands/                # Commandes slash
-│   └── epct.md
-├── scripts/                 # Scripts utilitaires
-│   └── statusline-ccusage.sh
-└── settings.json            # Configuration partagée
+marketplace/
+├── .claude-plugin/
+│   └── marketplace.json
+└── mon-plugin/              # Dossier du plugin
+    ├── agents/              # Agents personnalisés
+    │   └── explore-code.md
+    ├── commands/            # Commandes slash
+    │   └── epct.md
+    ├── scripts/             # Scripts utilitaires
+    │   └── statusline.sh
+    └── settings.json        # Configuration partagée
 ```
 
 4. **Publiez sur GitHub** (optionnel) :
