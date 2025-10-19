@@ -174,9 +174,57 @@ Le fichier `settings.local.json` permet les personnalisations individuelles :
    ccusage --version
    ```
 
-### Installation Globale (Tous les projets)
+### Méthode 1 : Via Plugin Marketplace (Recommandée)
 
-#### Étape 1 : Cloner le Repository
+La façon la plus simple et rapide d'installer cette configuration.
+
+#### Installation
+
+```bash
+# 1. Ajouter la Lingelo Marketplace
+/plugin marketplace add Lingelo/lingelo-marketplace
+
+# 2. Installer le plugin lingelo-base
+/plugin install lingelo-base
+```
+
+#### Ce qui est installé automatiquement
+
+- ✅ **Agent explore-code** dans `~/.claude/agents/`
+- ✅ **Commande /epct** dans `~/.claude/commands/`
+- ✅ **Script statusline** dans `~/.claude/scripts/`
+- ✅ **Configuration MCP** (Context7, Atlassian, Playwright)
+- ✅ **Settings de base** dans `~/.claude/settings.json`
+
+#### Avantages
+
+- 🚀 **Rapide** : Installation en 2 commandes
+- 🔄 **Mises à jour** : Réinstallez le plugin pour obtenir les dernières versions
+- 📦 **Complet** : Tous les composants installés d'un coup
+- 🔧 **Configuré** : Permissions et MCP préconfigurés
+
+#### Après installation
+
+```bash
+# Vérifier que tout est installé
+ls ~/.claude/agents/explore-code.md
+ls ~/.claude/commands/epct.md
+ls ~/.claude/scripts/statusline-ccusage.sh
+
+# Tester
+claude
+/epct test de la configuration
+```
+
+**📦 [Voir la marketplace](https://github.com/Lingelo/lingelo-marketplace)** pour plus de détails et d'autres plugins disponibles.
+
+---
+
+### Méthode 2 : Installation Manuelle
+
+#### Installation Globale (Tous les projets)
+
+##### Étape 1 : Cloner le Repository
 
 ```bash
 # Cloner via HTTPS
@@ -188,7 +236,7 @@ git clone git@github.com:votre-username/claude-code-sample.git
 cd claude-code-sample
 ```
 
-#### Étape 2 : Copier les Configurations
+##### Étape 2 : Copier les Configurations
 
 ```bash
 # Créer les dossiers si nécessaire
@@ -207,7 +255,7 @@ cp -r .claude/scripts/* ~/.claude/scripts/
 chmod +x ~/.claude/scripts/*.sh
 ```
 
-#### Étape 3 : Configurer les Settings (Optionnel)
+##### Étape 3 : Configurer les Settings (Optionnel)
 
 ```bash
 # Copier settings.json comme base
@@ -217,7 +265,7 @@ cp .claude/settings.json ~/.claude/settings.json
 nano ~/.claude/settings.json
 ```
 
-#### Étape 4 : Vérification
+##### Étape 4 : Vérification
 
 ```bash
 # Vérifier la structure
@@ -233,22 +281,22 @@ tree ~/.claude -L 2
 #     └── statusline-ccusage.sh
 ```
 
-### Installation Par Projet
+#### Installation Par Projet
 
-#### Étape 1 : Cloner le Repository
+##### Étape 1 : Cloner le Repository
 
 ```bash
-git clone https://github.com/votre-username/claude-code-sample.git
+git clone https://github.com/Lingelo/claude-code-sample.git
 cd claude-code-sample
 ```
 
-#### Étape 2 : Rendre les Scripts Exécutables
+##### Étape 2 : Rendre les Scripts Exécutables
 
 ```bash
 chmod +x .claude/scripts/statusline-ccusage.sh
 ```
 
-#### Étape 3 : Configuration Personnelle (Optionnel)
+##### Étape 3 : Configuration Personnelle (Optionnel)
 
 ```bash
 # Créer settings.local.json pour vos préférences
@@ -261,13 +309,13 @@ echo ".claude/settings.local.json" >> .gitignore
 nano .claude/settings.local.json
 ```
 
-#### Étape 4 : Lancer Claude Code
+##### Étape 4 : Lancer Claude Code
 
 ```bash
 claude
 ```
 
-### Approche Hybride (Recommandée)
+#### Approche Hybride
 
 Cette approche combine le meilleur des deux mondes :
 

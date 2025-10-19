@@ -44,11 +44,29 @@ Avant de commencer, assurez-vous d'avoir :
 
 ## 🚀 Quick Start (5 minutes)
 
-### 1. Cloner et installer
+### Option A : Via Plugin Marketplace (Recommandée) 🆕
+
+La méthode la plus rapide - **2 commandes seulement** :
+
+```bash
+# 1. Ajouter la Lingelo Marketplace
+/plugin marketplace add Lingelo/lingelo-marketplace
+
+# 2. Installer le plugin lingelo-base
+/plugin install lingelo-base
+```
+
+✅ **C'est tout !** Agents, commandes, scripts et MCP sont installés automatiquement.
+
+---
+
+### Option B : Installation Manuelle
+
+#### 1. Cloner et installer
 
 ```bash
 # Cloner le repository
-git clone https://github.com/votre-username/claude-code-sample.git
+git clone https://github.com/Lingelo/claude-code-sample.git
 cd claude-code-sample
 
 # Installer ccusage pour la statusline
@@ -58,16 +76,16 @@ npm install -g ccusage
 chmod +x .claude/scripts/statusline-ccusage.sh
 ```
 
-### 2. Choisir votre mode d'installation
+#### 2. Choisir votre mode d'installation
 
-**Option A : Configuration globale (tous vos projets)**
+**Global (tous vos projets)**
 ```bash
 cp -r .claude/agents/* ~/.claude/agents/
 cp -r .claude/commands/* ~/.claude/commands/
 cp -r .claude/scripts/* ~/.claude/scripts/
 ```
 
-**Option B : Configuration par projet (ce projet uniquement)**
+**Par projet (ce projet uniquement)**
 ```bash
 # La configuration est déjà dans .claude/
 # Rien à faire !
@@ -153,7 +171,31 @@ Configuration de permissions granulaires :
 
 ## 📦 Installation
 
-### Configuration Globale vs Par Projet
+### Méthode 1 : Plugin Marketplace (Recommandée) 🆕
+
+La façon la plus simple d'installer cette configuration est via la **Lingelo Marketplace** :
+
+```bash
+# Ajouter la Lingelo Marketplace
+/plugin marketplace add Lingelo/lingelo-marketplace
+
+# Installer le plugin lingelo-base
+/plugin install lingelo-base
+```
+
+✅ **Avantages :**
+- Installation en 2 commandes
+- Mises à jour automatiques
+- Tous les agents, commandes et scripts inclus
+- Configuration MCP pré-configurée
+
+📦 **[Voir la marketplace](https://github.com/Lingelo/lingelo-marketplace)** pour plus de détails et d'autres plugins disponibles.
+
+---
+
+### Méthode 2 : Installation Manuelle
+
+#### Configuration Globale vs Par Projet
 
 | Aspect | Globale (`~/.claude/`) | Par Projet (`./.claude/`) |
 |--------|------------------------|---------------------------|
@@ -162,7 +204,7 @@ Configuration de permissions granulaires :
 | Partage équipe | ❌ Personnel | ✅ Automatique via Git |
 | Maintenance | Une seule config | Config par projet |
 
-### Installation Globale
+#### Installation Globale
 
 ```bash
 # Copier agents, commandes et scripts
@@ -174,7 +216,7 @@ cp -r .claude/scripts/* ~/.claude/scripts/
 cp .claude/settings.json ~/.claude/settings.json
 ```
 
-### Installation Par Projet
+#### Installation Par Projet
 
 La configuration est déjà présente dans `.claude/`. Il suffit de :
 
@@ -182,7 +224,7 @@ La configuration est déjà présente dans `.claude/`. Il suffit de :
 2. Rendre le script statusline exécutable : `chmod +x .claude/scripts/statusline-ccusage.sh`
 3. Lancer Claude Code : `claude`
 
-### Approche Hybride (Recommandée)
+#### Approche Hybride
 
 Combinez les deux pour un maximum de flexibilité :
 
@@ -438,6 +480,7 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 ### Documentation
 
 - [Documentation Claude Code officielle](https://docs.claude.com/en/docs/claude-code)
+- [Lingelo Marketplace](https://github.com/Lingelo/lingelo-marketplace) : Plugin marketplace avec configurations prêtes à l'emploi
 - [Guide détaillé de cette configuration](docs/GUIDE.md)
 - [Documentation MCP](docs/MCP.md)
 - [ccusage GitHub](https://github.com/ryoppippi/ccusage)
