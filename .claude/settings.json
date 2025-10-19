@@ -13,6 +13,12 @@
     ],
     "ask": []
   },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "mcp__context7",
+    "atlassian",
+    "playwright"
+  ],
   "statusLine": {
     "enabled": true,
     "script": "./.claude/scripts/statusline-ccusage.sh"
