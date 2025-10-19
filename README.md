@@ -44,9 +44,18 @@ Avant de commencer, assurez-vous d'avoir :
 
 ## 🚀 Quick Start (5 minutes)
 
-### Option A : Via Plugin Marketplace (Recommandée) 🆕
+### Option A : Via Plugin Marketplace ⚠️
 
-La méthode la plus rapide - **2 commandes seulement** :
+> **⚠️ ATTENTION - Statut Expérimental**
+>
+> La marketplace a actuellement des problèmes d'installation :
+> - ❌ Agents ne s'installent pas correctement
+> - ❌ Scripts ne s'installent pas correctement
+> - ✅ Commandes s'installent correctement
+>
+> **Recommandation :** Utilisez l'installation manuelle (Option B) jusqu'à résolution.
+
+**Si vous souhaitez quand même tester :**
 
 ```bash
 # 1. Ajouter la Lingelo Marketplace
@@ -54,9 +63,14 @@ La méthode la plus rapide - **2 commandes seulement** :
 
 # 2. Installer le plugin lingelo-base
 /plugin install lingelo-base
+
+# 3. Vérifier l'installation (agents et scripts manqueront probablement)
+ls ~/.claude/agents/explore-code.md      # ❌ Manquant
+ls ~/.claude/commands/epct.md            # ✅ OK
+ls ~/.claude/scripts/statusline-ccusage.sh  # ❌ Manquant
 ```
 
-✅ **C'est tout !** Agents, commandes, scripts et MCP sont installés automatiquement.
+⚠️ **Vous devrez ensuite installer manuellement les agents et scripts manquants.**
 
 ---
 
@@ -171,9 +185,20 @@ Configuration de permissions granulaires :
 
 ## 📦 Installation
 
-### Méthode 1 : Plugin Marketplace (Recommandée) 🆕
+### Méthode 1 : Plugin Marketplace ⚠️ Expérimental
 
-La façon la plus simple d'installer cette configuration est via la **Lingelo Marketplace** :
+> **⚠️ ATTENTION - Installation Incomplète**
+>
+> La marketplace Lingelo a actuellement des limitations :
+> - ❌ **Agents** : Ne s'installent pas dans `~/.claude/agents/`
+> - ❌ **Scripts** : Ne s'installent pas dans `~/.claude/scripts/`
+> - ✅ **Commandes** : S'installent correctement dans `~/.claude/commands/`
+>
+> **Status :** Problème en cours d'investigation avec l'équipe Claude Code.
+>
+> **Recommandation :** Utilisez la Méthode 2 (Installation Manuelle) pour une installation complète.
+
+**Installation via marketplace** (si vous souhaitez tester) :
 
 ```bash
 # Ajouter la Lingelo Marketplace
@@ -181,15 +206,12 @@ La façon la plus simple d'installer cette configuration est via la **Lingelo Ma
 
 # Installer le plugin lingelo-base
 /plugin install lingelo-base
+
+# ⚠️ Installation incomplète - manquera agents et scripts
+# Vous devrez compléter manuellement avec la Méthode 2
 ```
 
-✅ **Avantages :**
-- Installation en 2 commandes
-- Mises à jour automatiques
-- Tous les agents, commandes et scripts inclus
-- Configuration MCP pré-configurée
-
-📦 **[Voir la marketplace](https://github.com/Lingelo/lingelo-marketplace)** pour plus de détails et d'autres plugins disponibles.
+📦 **[Lingelo Marketplace](https://github.com/Lingelo/lingelo-marketplace)** - En développement actif
 
 ---
 
@@ -487,8 +509,8 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 ### Communauté
 
-- [GitHub Issues](https://github.com/votre-username/claude-code-sample/issues) : Signaler un bug ou demander une feature
-- [Discussions](https://github.com/votre-username/claude-code-sample/discussions) : Questions et discussions
+- [GitHub Issues](https://github.com/Lingelo/claude-code-sample/issues) : Signaler un bug ou demander une feature
+- [Discussions](https://github.com/Lingelo/claude-code-sample/discussions) : Questions et discussions
 
 ---
 
@@ -500,6 +522,6 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 ---
 
-**Maintenu avec ❤️ par [Angelo LIMA](https://github.com/votre-username)**
+**Maintenu avec ❤️ par [Angelo LIMA](https://github.com/Lingelo)**
 
 *Ce projet est continuellement mis à jour avec les meilleures pratiques de développement.*

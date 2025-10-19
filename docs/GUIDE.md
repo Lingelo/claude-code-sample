@@ -174,11 +174,27 @@ Le fichier `settings.local.json` permet les personnalisations individuelles :
    ccusage --version
    ```
 
-### Méthode 1 : Via Plugin Marketplace (Recommandée)
+### Méthode 1 : Via Plugin Marketplace ⚠️ Expérimental
 
-La façon la plus simple et rapide d'installer cette configuration.
+> **⚠️ AVERTISSEMENT - Installation Incomplète**
+>
+> **Problème connu :** La marketplace Lingelo n'installe actuellement que les commandes. Les agents et scripts ne s'installent pas correctement.
+>
+> **Ce qui fonctionne :**
+> - ✅ **Commandes** : S'installent dans `~/.claude/commands/`
+>
+> **Ce qui ne fonctionne PAS :**
+> - ❌ **Agents** : Ne s'installent PAS dans `~/.claude/agents/`
+> - ❌ **Scripts** : Ne s'installent PAS dans `~/.claude/scripts/`
+> - ❌ **Settings** : Ne s'installent PAS dans `~/.claude/settings.json`
+>
+> **Status :** Problème en cours d'investigation avec l'équipe Claude Code.
+>
+> **Recommandation forte :** Utilisez la Méthode 2 (Installation Manuelle) pour une installation complète et fonctionnelle.
 
-#### Installation
+#### Installation via Marketplace (expérimental)
+
+**Si vous souhaitez quand même tester :**
 
 ```bash
 # 1. Ajouter la Lingelo Marketplace
@@ -188,35 +204,33 @@ La façon la plus simple et rapide d'installer cette configuration.
 /plugin install lingelo-base
 ```
 
-#### Ce qui est installé automatiquement
-
-- ✅ **Agent explore-code** dans `~/.claude/agents/`
-- ✅ **Commande /epct** dans `~/.claude/commands/`
-- ✅ **Script statusline** dans `~/.claude/scripts/`
-- ✅ **Configuration MCP** (Context7, Atlassian, Playwright)
-- ✅ **Settings de base** dans `~/.claude/settings.json`
-
-#### Avantages
-
-- 🚀 **Rapide** : Installation en 2 commandes
-- 🔄 **Mises à jour** : Réinstallez le plugin pour obtenir les dernières versions
-- 📦 **Complet** : Tous les composants installés d'un coup
-- 🔧 **Configuré** : Permissions et MCP préconfigurés
-
-#### Après installation
+#### Vérification (attendez-vous à des échecs)
 
 ```bash
-# Vérifier que tout est installé
-ls ~/.claude/agents/explore-code.md
-ls ~/.claude/commands/epct.md
-ls ~/.claude/scripts/statusline-ccusage.sh
-
-# Tester
-claude
-/epct test de la configuration
+# Vérifier l'installation
+ls ~/.claude/agents/explore-code.md        # ❌ MANQUANT
+ls ~/.claude/commands/epct.md              # ✅ PRÉSENT
+ls ~/.claude/scripts/statusline-ccusage.sh # ❌ MANQUANT
 ```
 
-**📦 [Voir la marketplace](https://github.com/Lingelo/lingelo-marketplace)** pour plus de détails et d'autres plugins disponibles.
+#### Compléter l'installation manquante
+
+**Vous DEVREZ installer manuellement les agents et scripts manquants :**
+
+```bash
+# Cloner le repository
+git clone https://github.com/Lingelo/claude-code-sample.git
+cd claude-code-sample
+
+# Installer les agents manquants
+cp -r .claude/agents/* ~/.claude/agents/
+
+# Installer les scripts manquants
+cp -r .claude/scripts/* ~/.claude/scripts/
+chmod +x ~/.claude/scripts/*.sh
+```
+
+**📦 [Lingelo Marketplace](https://github.com/Lingelo/lingelo-marketplace)** - En développement actif
 
 ---
 
@@ -228,10 +242,10 @@ claude
 
 ```bash
 # Cloner via HTTPS
-git clone https://github.com/votre-username/claude-code-sample.git
+git clone https://github.com/Lingelo/claude-code-sample.git
 
 # OU cloner via SSH
-git clone git@github.com:votre-username/claude-code-sample.git
+git clone git@github.com:Lingelo/claude-code-sample.git
 
 cd claude-code-sample
 ```
@@ -803,7 +817,7 @@ Le script `statusline-ccusage.sh` s'exécute à chaque rafraîchissement et affi
 
 **Absolu (installation globale) :**
 ```json
-"command": "/Users/votre-username/.claude/scripts/statusline-ccusage.sh"
+"command": "/Users/<username>/.claude/scripts/statusline-ccusage.sh"
 ```
 
 **Tilde (home directory) :**
